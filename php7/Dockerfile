@@ -1,3 +1,4 @@
+#1.Base Image
 FROM alpine
 
 # ensure www-data user exists
@@ -70,8 +71,8 @@ RUN apk update \
 
 RUN mkdir -p /usr/local/var/log/php7/
 RUN mkdir -p /usr/local/var/run/
-COPY php/php-fpm.conf /etc/php7/
-COPY php/www.conf /etc/php7/php-fpm.d/
+COPY ./php/php-fpm.conf /etc/php7/
+COPY ./php/www.conf /etc/php7/php-fpm.d/
 
 #RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
 #ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
@@ -95,13 +96,13 @@ RUN curl -sS https://getcomposer.org/installer | \
 
 #4.ADD-NGINX
 RUN apk add nginx
-COPY nginx/conf.d/default.conf /etc/nginx/conf.d/
-COPY nginx/nginx.conf /etc/nginx/
-COPY nginx/rewrite.conf /etc/nginx/
-COPY nginx/cert /etc/nginx/cert/
+COPY ./nginx/conf.d/default.conf /etc/nginx/conf.d/
+COPY ./nginx/nginx.conf /etc/nginx/
+COPY ./nginx/rewrite.conf /etc/nginx/
+COPY ./nginx/cert /etc/nginx/cert/
 
 RUN mkdir -p /usr/share/nginx/html/public/
-COPY php/index.php /usr/share/nginx/html/public/
+COPY ./php/index.php /usr/share/nginx/html/public/
 #RUN mkdir -p /run/nginx
 #RUN touch /run/nginx/nginx.pid
 # Expose volumes
@@ -116,10 +117,10 @@ RUN apk add supervisor \
 
 # Define mountable directories.
 VOLUME ["/etc/supervisor/conf.d", "/var/log/supervisor/"]
-COPY supervisor/conf.d /etc/supervisor/conf.d/
+COPY ./supervisor/conf.d/ /etc/supervisor/conf.d/
 
 #6.ADD-CRONTABS
-COPY crontabs/default /var/spool/cron/crontabs/
+COPY ./crontabs/default /var/spool/cron/crontabs/
 RUN cat /var/spool/cron/crontabs/default >> /var/spool/cron/crontabs/root
 RUN mkdir -p /var/log/cron \
  && touch /var/log/cron/cron.log
@@ -153,9 +154,8 @@ VOLUME /var/log/cron
 #9.添加启动脚本
 # Define working directory.
 WORKDIR /usr/share/nginx/html
-COPY entrypoint.sh /usr/share/nginx/html/
+COPY ./entrypoint.sh /usr/share/nginx/html/
 RUN chmod +x /usr/share/nginx/html/entrypoint.sh
 
 #CMD ["supervisord", "--nodaemon", "--configuration", "/etc/supervisor/conf.d/supervisord.conf"]
 ENTRYPOINT ["./entrypoint.sh"]
-
