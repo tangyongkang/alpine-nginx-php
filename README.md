@@ -95,4 +95,4 @@ $ docker exec -it container_name sh
     
     
     
-    sudo cp -r /www/wwwroot/apnsc/php7 /root/
+    sudo cp -r /www/wwwroot/alpine-nginx-php/php7 /root/
